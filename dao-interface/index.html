@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAO Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.0/dist/ethers.umd.min.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <h1>Decentralized Autonomous Organization (DAO) Interface</h1>
+    <button id="connectButton">Connect Wallet</button>
+    <div id="walletInfo"></div>
+
+    <h2>Submit Proposal</h2>
+    <input type="text" id="proposalDescription" placeholder="Proposal Description">
+    <button id="submitProposalButton">Submit Proposal</button>
+
+    <h2>Vote on Proposal</h2>
+    <input type="number" id="proposalId" placeholder="Proposal ID">
+    <button id="voteButton">Vote</button>
+
+    <h2>Check Proposal Status</h2>
+    <input type="number" id="checkProposalId" placeholder="Proposal ID">
+    <button id="checkStatusButton">Check Status</button>
+    <div id="proposalStatus"></div>
+</body>
+</html>
