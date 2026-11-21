@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Compiler output (Remix artifacts and downloaded dependencies)
+artifacts/
+.deps/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
