@@ -17,7 +17,7 @@ A minimal proposal and voting smart contract (`SimpleDAO`) with a plain HTML and
 
 **Front end (`dao-interface/`).** `index.html` loads the ethers 5.6.0 UMD build from jsDelivr, then `app.js`, which holds the contract address and ABI and wires up four buttons:
 
-- **Connect Wallet** requests accounts with `eth_requestAccounts`, wraps `window.ethereum` in `ethers.providers.Web3Provider`, and creates an `ethers.Contract` bound to the signer.
+- **Connect Wallet** requests accounts with `eth_requestAccounts`, wraps `window.ethereum` in `ethers.providers.Web3Provider`, and creates an `ethers.Contract` bound to the signer. Until that has happened, the other three buttons only show "Please connect your wallet first."
 - **Submit Proposal** and **Vote** read the current gas price, send the transaction with that price plus 10%, and wait for it to be mined (`tx.wait()`) before showing an alert. **Vote** first calls `hasVoted` for the connected account and shows "You have already voted on this proposal." instead of sending a transaction that would fail.
 - **Check Status** reads `proposalCount()` to reject out-of-range IDs, then calls `getProposalStatus(id)` and shows the description and the vote count on the page.
 

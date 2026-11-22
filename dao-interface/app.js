@@ -72,6 +72,16 @@ let provider;
 let signer;
 let contract;
 
+// Called at the start of every action. Until connectWallet() has created
+// the contract object, it asks the user to connect and returns false.
+function isReady() {
+    if (!contract) {
+        alert('Please connect your wallet first.');
+        return false;
+    }
+    return true;
+}
+
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
         try {
@@ -92,6 +102,8 @@ async function connectWallet() {
 }
 
 async function submitProposal() {
+    if (!isReady()) return;
+
     const description = document.getElementById('proposalDescription').value;
     if (!description) {
         alert('Please enter a proposal description.');
@@ -114,6 +126,8 @@ async function submitProposal() {
 }
 
 async function voteOnProposal() {
+    if (!isReady()) return;
+
     const proposalId = document.getElementById('proposalId').value;
     if (!proposalId) {
         alert('Please enter a proposal ID.');
@@ -143,6 +157,8 @@ async function voteOnProposal() {
 }
 
 async function checkProposalStatus() {
+    if (!isReady()) return;
+
     const proposalId = document.getElementById('checkProposalId').value;
     if (!proposalId) {
         alert('Please enter a proposal ID.');
