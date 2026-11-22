@@ -14,6 +14,18 @@ const contractABI = [
         "type": "function"
     },
     {
+        "inputs": [
+            { "internalType": "uint256", "name": "", "type": "uint256" },
+            { "internalType": "address", "name": "", "type": "address" }
+        ],
+        "name": "hasVoted",
+        "outputs": [
+            { "internalType": "bool", "name": "", "type": "bool" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "proposalCount",
         "outputs": [
@@ -108,6 +120,13 @@ async function voteOnProposal() {
     }
 
     try {
+        // The contract rejects a second vote from the same address. Checking
+        // first gives a clear message instead of a failed transaction.
+        if (await contract.hasVoted(proposalId, await signer.getAddress())) {
+            alert('You have already voted on this proposal.');
+            return;
+        }
+
         const gasPrice = await provider.getGasPrice();
         const tx = await contract.vote(proposalId, {
             gasPrice: gasPrice.add(gasPrice.div(10)) // Adding 10% to current gas price

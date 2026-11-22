@@ -11,6 +11,9 @@ contract SimpleDAO {
     mapping(uint256 => Proposal) public proposals;
     uint256 public proposalCount;
 
+    // hasVoted[proposalId][voter] becomes true once that address has voted on that proposal.
+    mapping(uint256 => mapping(address => bool)) public hasVoted;
+
     function submitProposal(string memory _description) public {
         proposals[proposalCount] = Proposal({
             description: _description,
@@ -22,6 +25,8 @@ contract SimpleDAO {
 
     function vote(uint256 _proposalId) public {
         require(proposals[_proposalId].exists, "Proposal does not exist.");
+        require(!hasVoted[_proposalId][msg.sender], "You have already voted on this proposal.");
+        hasVoted[_proposalId][msg.sender] = true;
         proposals[_proposalId].voteCount++;
     }
 
