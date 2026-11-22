@@ -4,7 +4,7 @@ A minimal proposal and voting smart contract (`SimpleDAO`) with a plain HTML and
 
 ## How it works
 
-**Contract (`contract.sol`).** Proposals are stored in a `mapping(uint256 => Proposal)` keyed by a sequential ID that starts at 0. Each `Proposal` holds a description, a vote count and an `exists` flag. A second mapping, `hasVoted`, records for each proposal which addresses have already voted.
+**Contract (`contracts/SimpleDAO.sol`).** Proposals are stored in a `mapping(uint256 => Proposal)` keyed by a sequential ID that starts at 0. Each `Proposal` holds a description, a vote count and an `exists` flag. A second mapping, `hasVoted`, records for each proposal which addresses have already voted.
 
 | Function | Kind | Behavior |
 | --- | --- | --- |
@@ -36,12 +36,12 @@ You need MetaMask with some Sepolia test ETH (from a Sepolia faucet) and Python 
 The contract has to be deployed again. The address that `app.js` used before (`0x5FD6eB55D12E759a21C09eF703fe0CBa1DC9d88D`) is a deployment of the old contract, without `hasVoted` or vote counts, so `CONTRACT_ADDRESS` now starts empty and the page asks for an address until you set one.
 
 1. In MetaMask, switch to the **Sepolia** network and select the account that will pay for the deployment.
-2. Open [Remix](https://remix.ethereum.org). In the **File explorer**, create a file named `SimpleDAO.sol` and paste the contents of `contract.sol` into it.
+2. Open [Remix](https://remix.ethereum.org). In the **File explorer**, create a file named `SimpleDAO.sol` and paste the contents of `contracts/SimpleDAO.sol` into it.
 3. Open the **Solidity compiler** tab, select compiler version 0.8.30 (the version the tests use; any 0.8.x release works) and click **Compile SimpleDAO.sol**.
 4. Open the **Deploy & run transactions** tab and set **Environment** to **Injected Provider - MetaMask**. Approve the connection in MetaMask and check that Remix shows your account and Sepolia (chain ID 11155111).
 5. Select `SimpleDAO` in the **Contract** list, click **Deploy** and confirm the transaction in MetaMask.
 6. When the transaction is mined, the contract appears under **Deployed Contracts**. Click the copy icon next to it to copy its address.
-7. In `dao-interface/app.js`, paste the address into `CONTRACT_ADDRESS` at the top of the file: `const CONTRACT_ADDRESS = '0x...';`. The ABI in `app.js` already matches `contract.sol`; if you change the contract, copy the new ABI from the **ABI** button in the compiler tab.
+7. In `dao-interface/app.js`, paste the address into `CONTRACT_ADDRESS` at the top of the file: `const CONTRACT_ADDRESS = '0x...';`. The ABI in `app.js` already matches `contracts/SimpleDAO.sol`; if you change the contract, copy the new ABI from the **ABI** button in the compiler tab.
 8. Serve the folder over HTTP. MetaMask does not inject into `file://` pages unless the extension is allowed to access file URLs.
 
    ```bash
@@ -54,7 +54,8 @@ The contract has to be deployed again. The address that `app.js` used before (`0
 ## Project structure
 
 ```
-contract.sol           SimpleDAO contract
+contracts/
+  SimpleDAO.sol        SimpleDAO contract
 dao-interface/
   index.html           page markup; loads ethers 5.6.0 and app.js
   app.js               CONTRACT_ADDRESS setting, ABI, wallet and network checks, button handlers

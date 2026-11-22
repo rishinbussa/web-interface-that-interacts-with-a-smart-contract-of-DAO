@@ -1,8 +1,8 @@
 const { ethers } = window;
 
 // Address of your SimpleDAO deployment on Sepolia. This is the only place to
-// set it: deploy contract.sol from Remix (see the README) and paste the
-// address here.
+// set it: deploy contracts/SimpleDAO.sol from Remix (see the README) and
+// paste the address here.
 const CONTRACT_ADDRESS = '';
 
 // The page only works on the Sepolia test network.
@@ -96,7 +96,7 @@ async function checkContract(account) {
         await new ethers.Contract(CONTRACT_ADDRESS, contractABI, provider).hasVoted(0, account);
     } catch (error) {
         console.error("hasVoted check failed:", error);
-        return `The contract at ${CONTRACT_ADDRESS} does not answer hasVoted, so it is an older SimpleDAO without one vote per address or vote counts. Deploy contract.sol again and put the new address in CONTRACT_ADDRESS in app.js.`;
+        return `The contract at ${CONTRACT_ADDRESS} does not answer hasVoted, so it is an older SimpleDAO without one vote per address or vote counts. Deploy contracts/SimpleDAO.sol again and put the new address in CONTRACT_ADDRESS in app.js.`;
     }
     return '';
 }
