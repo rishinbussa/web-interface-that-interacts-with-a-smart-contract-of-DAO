@@ -27,7 +27,7 @@ On connect the page also checks `CONTRACT_ADDRESS`. If it is empty, if there is 
 
 ## Tech stack
 
-Solidity 0.8, ethers.js 5.6 (loaded from a CDN), MetaMask, HTML and vanilla JavaScript.
+Solidity 0.8, ethers.js 5.6 (loaded from a CDN), MetaMask, HTML and vanilla JavaScript. The contract tests use Hardhat 2 with ethers 6, Mocha and Chai.
 
 ## Run it locally
 
@@ -51,11 +51,26 @@ The contract has to be deployed again. The address that `app.js` used before (`0
 
 9. Open http://localhost:8000, click **Connect Wallet** and approve the connection in MetaMask. The line under the button should read `Connected: <your address> (Sepolia)`.
 
+## Tests
+
+You need Node.js 22. From the repository root:
+
+```bash
+npm install
+npm test
+```
+
+`npm test` runs `test/SimpleDAO.test.js` on Hardhat's in-process network. The tests check that proposals are numbered from 0, that each address can vote once per proposal (a second vote reverts with "You have already voted on this proposal." and leaves the count unchanged), that voters are tracked separately for each proposal, and that `getProposalStatus` returns the description and the vote count. Hardhat compiles the contract with the `solc` 0.8.30 package from npm (`hardhat.config.js` points it there instead of downloading a compiler), and `npm run compile` runs only that step. The tests use ethers 6 through Hardhat, while the page loads ethers 5 from the CDN; the two do not share code.
+
 ## Project structure
 
 ```
 contracts/
   SimpleDAO.sol        SimpleDAO contract
+test/
+  SimpleDAO.test.js    Hardhat tests for voting and vote counts
+hardhat.config.js      Hardhat settings (solc from npm)
+package.json, package-lock.json   test dependencies and npm scripts
 dao-interface/
   index.html           page markup; loads ethers 5.6.0 and app.js
   app.js               CONTRACT_ADDRESS setting, ABI, wallet and network checks, button handlers
@@ -65,4 +80,4 @@ dao-interface/
 
 - There is no membership, voting period, quorum or execution step. The contract is a proposal registry with a vote counter.
 - The contract emits no events, so the page cannot report the ID of a proposal it just submitted (IDs are sequential from 0).
-- There are no tests or deployment scripts; deployment is manual through Remix.
+- There is no deployment script; deployment is manual through Remix.
