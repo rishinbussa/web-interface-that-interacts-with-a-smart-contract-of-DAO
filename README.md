@@ -82,5 +82,8 @@ dao-interface/
 ## Limitations and next steps
 
 - There is no membership, voting period, quorum or execution step. The contract is a proposal registry with a vote counter.
+- One vote per address is not one vote per person: anyone can vote again from a new address, since there is no membership list.
 - The contract emits no events, so the page cannot report the ID of a proposal it just submitted (IDs are sequential from 0).
+- `CONTRACT_ADDRESS` is empty in the repository. Until the fixed contract is deployed and its address filled in, Connect Wallet only shows a message asking for it.
+- If you switch accounts in MetaMask after connecting, reload the page and connect again; the address shown under **Connect Wallet** is not updated on its own.
 - There is no deployment script; deployment is manual through Remix.
