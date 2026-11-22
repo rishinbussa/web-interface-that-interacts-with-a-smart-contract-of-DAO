@@ -8,7 +8,8 @@ const contractABI = [
         ],
         "name": "getProposalStatus",
         "outputs": [
-            { "internalType": "string", "name": "", "type": "string" }
+            { "internalType": "string", "name": "description", "type": "string" },
+            { "internalType": "uint256", "name": "voteCount", "type": "uint256" }
         ],
         "stateMutability": "view",
         "type": "function"
@@ -155,9 +156,10 @@ async function checkProposalStatus() {
             return;
         }
 
-        const status = await contract.getProposalStatus(proposalId);
-        console.log("Checking status for proposal ID:", proposalId, "Status:", status);
-        document.getElementById('proposalStatus').innerText = `Proposal Status: ${status}`;
+        const [description, voteCount] = await contract.getProposalStatus(proposalId);
+        console.log("Checking status for proposal ID:", proposalId, description, voteCount.toString());
+        document.getElementById('proposalStatus').innerText =
+            `Proposal ${proposalId}: ${description}\nVotes: ${voteCount.toString()}`;
     } catch (error) {
         console.error("Error checking proposal status:", error);
         alert('An error occurred while checking the proposal status: ' + error.message);

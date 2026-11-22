@@ -30,8 +30,9 @@ contract SimpleDAO {
         proposals[_proposalId].voteCount++;
     }
 
-    function getProposalStatus(uint256 _proposalId) public view returns (string memory) {
+    function getProposalStatus(uint256 _proposalId) public view returns (string memory description, uint256 voteCount) {
         require(proposals[_proposalId].exists, "Proposal does not exist.");
-        return proposals[_proposalId].description;
+        Proposal storage proposal = proposals[_proposalId];
+        return (proposal.description, proposal.voteCount);
     }
 }

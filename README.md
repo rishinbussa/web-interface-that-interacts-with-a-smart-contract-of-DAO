@@ -1,6 +1,6 @@
 # SimpleDAO Web Interface
 
-A minimal proposal and voting smart contract (`SimpleDAO`) with a plain HTML and JavaScript front end. The page connects to MetaMask through ethers.js v5 and lets the connected account submit a proposal, vote on a proposal by ID, and look up a proposal's description by ID. There is no build step and no backend: the page calls the contract directly through the wallet.
+A minimal proposal and voting smart contract (`SimpleDAO`) with a plain HTML and JavaScript front end. The page connects to MetaMask through ethers.js v5 and lets the connected account submit a proposal, vote on a proposal by ID, and look up a proposal's description and vote count by ID. There is no build step and no backend: the page calls the contract directly through the wallet.
 
 ## How it works
 
@@ -10,7 +10,7 @@ A minimal proposal and voting smart contract (`SimpleDAO`) with a plain HTML and
 | --- | --- | --- |
 | `submitProposal(string)` | transaction | Stores a new proposal with 0 votes under ID `proposalCount`, then increments `proposalCount`. |
 | `vote(uint256)` | transaction | Reverts with "Proposal does not exist." for an unknown ID and with "You have already voted on this proposal." if the caller has voted on it before. Otherwise marks the caller in `hasVoted` and adds 1 to the proposal's vote count. |
-| `getProposalStatus(uint256)` | view | Reverts for an unknown ID, otherwise returns the proposal's description. |
+| `getProposalStatus(uint256)` | view | Reverts for an unknown ID, otherwise returns the proposal's description and vote count. |
 | `proposals(uint256)` | view | Public getter that returns description, vote count and `exists`. |
 | `proposalCount()` | view | Number of proposals submitted so far. |
 | `hasVoted(uint256, address)` | view | Public getter that returns whether an address has voted on a proposal. |
@@ -19,7 +19,7 @@ A minimal proposal and voting smart contract (`SimpleDAO`) with a plain HTML and
 
 - **Connect Wallet** requests accounts with `eth_requestAccounts`, wraps `window.ethereum` in `ethers.providers.Web3Provider`, and creates an `ethers.Contract` bound to the signer.
 - **Submit Proposal** and **Vote** read the current gas price, send the transaction with that price plus 10%, and wait for it to be mined (`tx.wait()`) before showing an alert. **Vote** first calls `hasVoted` for the connected account and shows "You have already voted on this proposal." instead of sending a transaction that would fail.
-- **Check Status** reads `proposalCount()` to reject out-of-range IDs, then calls `getProposalStatus(id)` and prints the result on the page.
+- **Check Status** reads `proposalCount()` to reject out-of-range IDs, then calls `getProposalStatus(id)` and shows the description and the vote count on the page.
 
 The page uses whichever network MetaMask is connected to, and the code does not check the chain ID, so the address in `app.js` has to be a `SimpleDAO` deployment on that network.
 
@@ -54,7 +54,6 @@ dao-interface/
 
 ## Limitations and next steps
 
-- `getProposalStatus` returns the description rather than a status or vote count, and the page never calls `proposals(id)`, so vote totals are not shown in the UI.
 - There is no membership, voting period, quorum or execution step. The contract is a proposal registry with a vote counter.
 - The contract emits no events, so the page cannot report the ID of a proposal it just submitted (IDs are sequential from 0).
 - The contract address is hard-coded, and there are no tests or deployment scripts; deployment is manual through Remix.
