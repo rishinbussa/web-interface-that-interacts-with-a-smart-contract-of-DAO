@@ -1,6 +1,9 @@
 const { ethers } = window;
 
-const contractAddress = '0x5FD6eB55D12E759a21C09eF703fe0CBa1DC9d88D'; // Replace with your contract address
+// Address of your SimpleDAO deployment on Sepolia. This is the only place to
+// set it: deploy contract.sol from Remix (see the README) and paste the
+// address here.
+const CONTRACT_ADDRESS = '';
 
 // The page only works on the Sepolia test network.
 const SEPOLIA_CHAIN_ID = 11155111;
@@ -78,6 +81,26 @@ let contract;
 // What the user has to do before the buttons work. connectWallet() changes it.
 let notReadyMessage = 'Please connect your wallet first.';
 
+// Returns an empty string if CONTRACT_ADDRESS points at the fixed SimpleDAO,
+// otherwise a message that says what is wrong.
+async function checkContract(account) {
+    if (!ethers.utils.isAddress(CONTRACT_ADDRESS)) {
+        return 'Set CONTRACT_ADDRESS at the top of app.js to the address of your SimpleDAO deployment on Sepolia.';
+    }
+    if (await provider.getCode(CONTRACT_ADDRESS) === '0x') {
+        return `There is no contract at ${CONTRACT_ADDRESS} on Sepolia. Check CONTRACT_ADDRESS in app.js.`;
+    }
+    try {
+        // hasVoted only exists in the fixed contract, where it never reverts.
+        // An older deployment has no such function, so the call fails.
+        await new ethers.Contract(CONTRACT_ADDRESS, contractABI, provider).hasVoted(0, account);
+    } catch (error) {
+        console.error("hasVoted check failed:", error);
+        return `The contract at ${CONTRACT_ADDRESS} does not answer hasVoted, so it is an older SimpleDAO without one vote per address or vote counts. Deploy contract.sol again and put the new address in CONTRACT_ADDRESS in app.js.`;
+    }
+    return '';
+}
+
 // Called at the start of every action. Until connectWallet() has created
 // the contract object, it shows notReadyMessage and returns false.
 function isReady() {
@@ -109,7 +132,14 @@ async function connectWallet() {
                 return;
             }
 
-            contract = new ethers.Contract(contractAddress, contractABI, signer);
+            const problem = await checkContract(address);
+            if (problem) {
+                notReadyMessage = problem;
+                document.getElementById('walletInfo').innerText = `Connected: ${address}. ${problem}`;
+                return;
+            }
+
+            contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
             document.getElementById('walletInfo').innerText = `Connected: ${address} (Sepolia)`;
             console.log("Connected to wallet:", address);
         } catch (error) {
