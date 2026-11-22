@@ -1,6 +1,10 @@
 const { ethers } = window;
 
 const contractAddress = '0x5FD6eB55D12E759a21C09eF703fe0CBa1DC9d88D'; // Replace with your contract address
+
+// The page only works on the Sepolia test network.
+const SEPOLIA_CHAIN_ID = 11155111;
+const SEPOLIA_CHAIN_ID_HEX = '0xaa36a7';
 const contractABI = [
     {
         "inputs": [
@@ -71,12 +75,14 @@ const contractABI = [
 let provider;
 let signer;
 let contract;
+// What the user has to do before the buttons work. connectWallet() changes it.
+let notReadyMessage = 'Please connect your wallet first.';
 
 // Called at the start of every action. Until connectWallet() has created
-// the contract object, it asks the user to connect and returns false.
+// the contract object, it shows notReadyMessage and returns false.
 function isReady() {
     if (!contract) {
-        alert('Please connect your wallet first.');
+        alert(notReadyMessage);
         return false;
     }
     return true;
@@ -88,9 +94,23 @@ async function connectWallet() {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
-            contract = new ethers.Contract(contractAddress, contractABI, signer);
             const address = await signer.getAddress();
-            document.getElementById('walletInfo').innerText = `Connected: ${address}`;
+
+            const { chainId } = await provider.getNetwork();
+            if (chainId !== SEPOLIA_CHAIN_ID) {
+                notReadyMessage = 'This page works on the Sepolia test network. Switch MetaMask to Sepolia, then click Connect Wallet again.';
+                document.getElementById('walletInfo').innerText = `Connected: ${address} on chain ID ${chainId}. ${notReadyMessage}`;
+                // Ask MetaMask to switch. If the user accepts, the chainChanged
+                // listener at the bottom of this file reloads the page.
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: SEPOLIA_CHAIN_ID_HEX }],
+                });
+                return;
+            }
+
+            contract = new ethers.Contract(contractAddress, contractABI, signer);
+            document.getElementById('walletInfo').innerText = `Connected: ${address} (Sepolia)`;
             console.log("Connected to wallet:", address);
         } catch (error) {
             console.error("Error connecting to wallet:", error);
@@ -187,4 +207,10 @@ window.addEventListener('load', () => {
     document.getElementById('submitProposalButton').addEventListener('click', submitProposal);
     document.getElementById('voteButton').addEventListener('click', voteOnProposal);
     document.getElementById('checkStatusButton').addEventListener('click', checkProposalStatus);
+
+    if (window.ethereum && window.ethereum.on) {
+        // MetaMask recommends reloading the page when the network changes,
+        // so the page never keeps using a provider for the old network.
+        window.ethereum.on('chainChanged', () => window.location.reload());
+    }
 });

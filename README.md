@@ -17,11 +17,11 @@ A minimal proposal and voting smart contract (`SimpleDAO`) with a plain HTML and
 
 **Front end (`dao-interface/`).** `index.html` loads the ethers 5.6.0 UMD build from jsDelivr, then `app.js`, which holds the contract address and ABI and wires up four buttons:
 
-- **Connect Wallet** requests accounts with `eth_requestAccounts`, wraps `window.ethereum` in `ethers.providers.Web3Provider`, and creates an `ethers.Contract` bound to the signer. Until that has happened, the other three buttons only show "Please connect your wallet first."
+- **Connect Wallet** requests accounts with `eth_requestAccounts`, wraps `window.ethereum` in `ethers.providers.Web3Provider`, checks that MetaMask is on Sepolia, and only then creates an `ethers.Contract` bound to the signer. Until that has happened, the other three buttons only show a message saying what is missing, such as "Please connect your wallet first."
 - **Submit Proposal** and **Vote** read the current gas price, send the transaction with that price plus 10%, and wait for it to be mined (`tx.wait()`) before showing an alert. **Vote** first calls `hasVoted` for the connected account and shows "You have already voted on this proposal." instead of sending a transaction that would fail.
 - **Check Status** reads `proposalCount()` to reject out-of-range IDs, then calls `getProposalStatus(id)` and shows the description and the vote count on the page.
 
-The page uses whichever network MetaMask is connected to, and the code does not check the chain ID, so the address in `app.js` has to be a `SimpleDAO` deployment on that network.
+The page only works on Sepolia (chain ID 11155111). If MetaMask is on another network when you connect, the page says so, asks MetaMask to switch with `wallet_switchEthereumChain`, and the other buttons only repeat that message. When the network changes, the page reloads (as MetaMask recommends) and you click **Connect Wallet** again.
 
 ## Tech stack
 
