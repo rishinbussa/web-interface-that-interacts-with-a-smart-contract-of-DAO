@@ -62,6 +62,8 @@ npm test
 
 `npm test` runs `test/SimpleDAO.test.js` on Hardhat's in-process network. The tests check that proposals are numbered from 0, that each address can vote once per proposal (a second vote reverts with "You have already voted on this proposal." and leaves the count unchanged), that voters are tracked separately for each proposal, and that `getProposalStatus` returns the description and the vote count. Hardhat compiles the contract with the `solc` 0.8.30 package from npm (`hardhat.config.js` points it there instead of downloading a compiler), and `npm run compile` runs only that step. The tests use ethers 6 through Hardhat, while the page loads ethers 5 from the CDN; the two do not share code.
 
+GitHub Actions (`.github/workflows/test.yml`) runs `npm ci`, the contract tests and a syntax check of `dao-interface/app.js` on Node 22 for every push to `main` and every pull request.
+
 ## Project structure
 
 ```
@@ -70,6 +72,7 @@ contracts/
 test/
   SimpleDAO.test.js    Hardhat tests for voting and vote counts
 hardhat.config.js      Hardhat settings (solc from npm)
+.github/workflows/test.yml   CI: contract tests and an app.js syntax check
 package.json, package-lock.json   test dependencies and npm scripts
 dao-interface/
   index.html           page markup; loads ethers 5.6.0 and app.js
